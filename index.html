@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nutripure — Générateur Blocs UX IT/ES</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Sora:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --np-blue-bg: #e8f0fb;
+    --np-blue-mid: #c5d8f7;
+    --np-dark: #0f1923;
+    --np-text: #1c2b3a;
+    --np-muted: #6b7c93;
+    --np-border: #dde6f0;
+    --np-white: #ffffff;
+    --np-accent: #1a4fd6;
+    --np-green: #1d8a5e;
+    --np-red: #c0392b;
+    --np-card-shadow: 0 2px 12px rgba(15,25,35,0.07);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  body { font-family: 'DM Sans', sans-serif; background: #f0f4f8; color: var(--np-text); min-height: 100vh; display: flex; flex-direction: column; }
+
+  header { background: var(--np-dark); padding: 0 2rem; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 200; }
+  .logo { display: flex; align-items: center; gap: 0.6rem; font-family: 'Sora', sans-serif; font-size: 1rem; color: #fff; }
+  .badge { font-size: 0.62rem; font-weight: 600; padding: 2px 7px; border-radius: 20px; letter-spacing: 0.04em; text-transform: uppercase; }
+  .badge-blue { background: var(--np-accent); color: #fff; }
+  .badge-green { background: var(--np-green); color: #fff; }
+
+  .info-bar { background: var(--np-blue-bg); border-bottom: 1px solid var(--np-blue-mid); padding: 0.55rem 2rem; font-size: 0.78rem; color: var(--np-accent); }
+
+  /* STEPPER */
+  .stepper { display: flex; align-items: center; padding: 1rem 2rem; background: var(--np-white); border-bottom: 1px solid var(--np-border); overflow-x: auto; gap: 0; }
+  .step { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.9rem; border-radius: 20px; cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: background 0.2s; }
+  .step:hover { background: var(--np-blue-bg); }
+  .step.active { background: var(--np-blue-bg); }
+  .step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--np-border); color: var(--np-muted); font-size: 0.72rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.2s, color 0.2s; }
+  .step.active .step-num { background: var(--np-accent); color: #fff; }
+  .step.done .step-num { background: var(--np-green); color: #fff; content: '✓'; }
+  .step-label { font-size: 0.8rem; font-weight: 500; color: var(--np-muted); }
+  .step.active .step-label { color: var(--np-accent); font-weight: 600; }
+  .step.done .step-label { color: var(--np-green); }
+  .step-arrow { color: #ccd6e0; font-size: 1rem; margin: 0 0.15rem; flex-shrink: 0; }
+
+  main { flex: 1; max-width: 1100px; width: 100%; margin: 0 auto; padding: 1.5rem 2rem; display: flex; flex-direction: column; gap: 1.25rem; }
+  @media (max-width: 700px) { main { padding: 1rem; } .stepper { padding: 1rem; } }
+
+  .card { background: var(--np-white); border-radius: var(--radius); box-shadow: var(--np-card-shadow); overflow: hidden; }
+  .card-header { padding: 1rem 1.4rem; border-bottom: 1px solid var(--np-border); display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; background: #fafbfd; flex-wrap: wrap; }
+  .card-header-left { display: flex; align-items: center; gap: 0.65rem; }
+  .step-circle { width: 27px; height: 27px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; color: #fff; flex-shrink: 0; }
+  .step-circle.blue { background: var(--np-accent); }
+  .step-circle.green { background: var(--np-green); }
+  .card-header h2 { font-size: 0.88rem; font-weight: 600; color: var(--np-text); }
+  .card-body { padding: 1.4rem; display: flex; flex-direction: column; gap: 1rem; }
+
+  .field-group { display: flex; flex-direction: column; gap: 0.35rem; }
+  label.field-label { font-size: 0.73rem; font-weight: 600; color: var(--np-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  input[type="text"], textarea { width: 100%; border: 1.5px solid var(--np-border); border-radius: var(--radius-sm); padding: 0.55rem 0.9rem; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--np-text); background: #fafbfd; outline: none; transition: border-color 0.2s, background 0.2s; }
+  input[type="text"]:focus, textarea:focus { border-color: var(--np-accent); background: #fff; }
+  textarea { resize: vertical; min-height: 130px; line-height: 1.65; }
+  textarea::placeholder, input::placeholder { color: #b0bcc8; }
+
+  .format-pills { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .pill { padding: 0.33rem 0.78rem; border-radius: 20px; border: 1.5px solid var(--np-border); font-size: 0.77rem; font-weight: 500; cursor: pointer; color: var(--np-muted); background: #fafbfd; transition: all 0.15s; font-family: 'DM Sans', sans-serif; }
+  .pill.selected { background: var(--np-blue-bg); border-color: var(--np-accent); color: var(--np-accent); }
+  .pill:hover:not(.selected) { border-color: #b0c4de; color: var(--np-text); }
+
+  .prompt-box { background: #f8fafd; border: 1.5px solid var(--np-blue-mid); border-radius: var(--radius-sm); padding: 1rem 1.1rem; font-size: 0.8rem; line-height: 1.7; color: var(--np-text); white-space: pre-wrap; word-break: break-word; max-height: 260px; overflow-y: auto; }
+
+  .cta-claude { display: flex; align-items: center; gap: 0.85rem; background: var(--np-blue-bg); border: 1px solid var(--np-blue-mid); border-radius: var(--radius-sm); padding: 0.9rem 1.1rem; text-decoration: none; transition: background 0.2s; }
+  .cta-claude:hover { background: #dae8fa; }
+  .cta-claude-icon { width: 36px; height: 36px; background: var(--np-accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.1rem; flex-shrink: 0; }
+  .cta-claude-text { flex: 1; }
+  .cta-claude-text strong { font-size: 0.88rem; color: var(--np-text); display: block; margin-bottom: 2px; }
+  .cta-claude-text span { font-size: 0.75rem; color: var(--np-muted); }
+  .cta-claude-arrow { color: var(--np-accent); font-size: 1.1rem; }
+
+  .hint { background: #fffbf0; border: 1px solid #f0d88a; border-radius: var(--radius-sm); padding: 0.7rem 1rem; font-size: 0.8rem; color: #7a5c00; display: flex; gap: 0.5rem; align-items: flex-start; line-height: 1.55; }
+
+  .response-area { width: 100%; min-height: 150px; border: 1.5px solid var(--np-border); border-radius: var(--radius-sm); padding: 0.85rem 1rem; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; line-height: 1.65; color: var(--np-text); background: #fafbfd; resize: vertical; outline: none; transition: border-color 0.2s; }
+  .response-area:focus { border-color: var(--np-green); background: #fff; }
+  .response-area::placeholder { color: #b0bcc8; }
+
+  .result-tabs { display: flex; border-bottom: 1px solid var(--np-border); background: #fafbfd; }
+  .tab { padding: 0.8rem 1.2rem; font-size: 0.77rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; border: none; background: none; color: var(--np-muted); font-family: 'DM Sans', sans-serif; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.2s, border-color 0.2s; }
+  .tab.active { color: var(--np-accent); border-bottom-color: var(--np-accent); background: var(--np-white); }
+
+  #previewPane { min-height: 280px; padding: 2rem 2.5rem; overflow: auto; background: #f4f7fb; font-size: 1rem; }
+  #previewContent { max-width: 800px; margin: 0 auto; }
+  #codePane { min-height: 280px; padding: 1.25rem; display: none; flex-direction: column; }
+  #codePane.visible { display: flex; }
+  pre { background: #f0f3f7; border-radius: var(--radius-sm); padding: 1rem; overflow: auto; font-size: 0.76rem; line-height: 1.7; color: #2d3748; white-space: pre-wrap; word-break: break-all; border: 1px solid var(--np-border); min-height: 200px; }
+
+  .action-bar { padding: 0.85rem 1.4rem; border-top: 1px solid var(--np-border); display: flex; gap: 0.6rem; justify-content: flex-end; align-items: center; background: #fafbfd; flex-wrap: wrap; }
+  .lang-badge { margin-right: auto; font-size: 0.73rem; font-weight: 600; padding: 0.28rem 0.75rem; border-radius: 20px; background: var(--np-blue-bg); color: var(--np-accent); display: none; }
+  .lang-badge.visible { display: block; }
+
+  .btn { padding: 0.52rem 1.05rem; border-radius: 7px; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s, transform 0.15s; border: none; display: inline-flex; align-items: center; gap: 0.4rem; }
+  .btn:hover:not(:disabled) { opacity: 0.85; transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn-primary { background: var(--np-dark); color: #fff; }
+  .btn-accent { background: var(--np-accent); color: #fff; }
+  .btn-green { background: var(--np-green); color: #fff; }
+  .btn-outline { background: #fff; color: var(--np-text); border: 1.5px solid var(--np-border); }
+  .btn-outline:hover:not(:disabled) { border-color: var(--np-text); }
+  .btn-full { width: 100%; justify-content: center; padding: 0.85rem; }
+
+  .error-msg { background: #fdf2f2; border: 1px solid #f5c0c0; border-radius: 7px; padding: 0.7rem 1rem; color: var(--np-red); font-size: 0.82rem; display: none; }
+
+  #toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(60px); background: var(--np-dark); color: #fff; padding: 0.65rem 1.3rem; border-radius: 8px; font-size: 0.82rem; transition: transform 0.3s ease; z-index: 999; pointer-events: none; }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+  #toast.success { background: var(--np-green); }
+  #toast.error { background: var(--np-red); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    Nutripure <span class="badge badge-blue">UX Blocks IT/ES</span> <span class="badge badge-green">✓ Gratuit</span>
+  </div>
+</header>
+
+<div class="info-bar">
+  🆓 Fonctionne avec n'importe quel compte Claude.ai (Free, Pro ou Max) — aucune clé API requise
+</div>
+
+<div class="stepper">
+  <div class="step active" id="s1"><div class="step-num">1</div><span class="step-label">Décrire le bloc</span></div>
+  <div class="step-arrow">›</div>
+  <div class="step" id="s2"><div class="step-num">2</div><span class="step-label">Copier dans Claude.ai</span></div>
+  <div class="step-arrow">›</div>
+  <div class="step" id="s3"><div class="step-num">3</div><span class="step-label">Coller la réponse</span></div>
+  <div class="step-arrow">›</div>
+  <div class="step" id="s4"><div class="step-num">4</div><span class="step-label">Aperçu & HTML</span></div>
+</div>
+
+<main>
+
+  <!-- ÉTAPE 1 -->
+  <div class="card" id="card1">
+    <div class="card-header">
+      <div class="card-header-left">
+        <div class="step-circle blue">1</div>
+        <h2>Décrire votre bloc UX</h2>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="field-group">
+        <label class="field-label">Type de bloc</label>
+        <div class="format-pills">
+          <button class="pill selected" data-val="auto">🤖 Auto (Smart Dataviz)</button>
+          <button class="pill" data-val="tableau">📊 Tableau comparatif</button>
+          <button class="pill" data-val="encart-definition">📌 Encart définition</button>
+          <button class="pill" data-val="points-cles">✅ Points clés</button>
+          <button class="pill" data-val="mini-faq">❓ Mini FAQ (4–8 Q/R)</button>
+          <button class="pill" data-val="precautions">⚠️ Précautions / Limites</button>
+          <button class="pill" data-val="infographie">📋 Infographie texte</button>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Texte source à transformer *</label>
+        <textarea id="sourceText" placeholder="Collez ici le paragraphe ou la section de l'article à transformer en bloc UX…"></textarea>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Instructions complémentaires (optionnel)</label>
+        <input type="text" id="extraContext" placeholder="Ex : Mettre en avant le bisglicinato, page catégorie magnésium…">
+      </div>
+      <div class="error-msg" id="errorMsg"></div>
+      <button class="btn btn-primary btn-full" onclick="buildPrompt()">➜ Générer le prompt Claude</button>
+    </div>
+  </div>
+
+  <!-- ÉTAPE 2 -->
+  <div class="card" id="card2" style="display:none;">
+    <div class="card-header">
+      <div class="card-header-left">
+        <div class="step-circle blue">2</div>
+        <h2>Copiez le prompt et collez-le dans Claude.ai</h2>
+      </div>
+      <button class="btn btn-accent" onclick="copyPrompt()">📋 Copier le prompt</button>
+    </div>
+    <div class="card-body">
+      <div class="hint"><span>💡</span><span>Copiez le prompt ci-dessous → ouvrez Claude.ai → collez-le et envoyez → revenez ici pour l'étape 3.</span></div>
+      <div class="prompt-box" id="promptDisplay"></div>
+      <a href="https://claude.ai" target="_blank" rel="noopener" class="cta-claude">
+        <div class="cta-claude-icon">✦</div>
+        <div class="cta-claude-text">
+          <strong>Ouvrir Claude.ai</strong>
+          <span>Compte gratuit suffisant · Collez le prompt et envoyez</span>
+        </div>
+        <div class="cta-claude-arrow">→</div>
+      </a>
+      <button class="btn btn-outline btn-full" onclick="showCards(3)">J'ai copié la réponse → Étape suivante</button>
+    </div>
+  </div>
+
+  <!-- ÉTAPE 3 -->
+  <div class="card" id="card3" style="display:none;">
+    <div class="card-header">
+      <div class="card-header-left">
+        <div class="step-circle blue">3</div>
+        <h2>Collez la réponse de Claude ici</h2>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="hint"><span>📋</span><span>Copiez <strong>toute</strong> la réponse de Claude.ai (le HTML + les recommandations) et collez-la ci-dessous.</span></div>
+      <textarea class="response-area" id="responseText" placeholder="Collez ici la réponse complète de Claude.ai…"></textarea>
+      <button class="btn btn-green btn-full" onclick="parseResponse()">✓ Afficher l'aperçu & le code HTML</button>
+    </div>
+  </div>
+
+  <!-- ÉTAPE 4 -->
+  <div class="card" id="card4" style="display:none;">
+    <div class="card-header">
+      <div class="card-header-left">
+        <div class="step-circle green">4</div>
+        <h2>Aperçu & Code HTML Shopify</h2>
+      </div>
+    </div>
+    <div class="result-tabs">
+      <button class="tab active" id="tabPreview" onclick="switchTab('preview')">👁 Aperçu</button>
+      <button class="tab" id="tabCode" onclick="switchTab('code')">⟨/⟩ HTML Shopify</button>
+    </div>
+    <div id="previewPane"><div id="previewContent"></div></div>
+    <div id="codePane"><pre id="codeContent"></pre></div>
+    <div class="action-bar">
+      <div class="lang-badge" id="langBadge"></div>
+      <button class="btn btn-outline" onclick="resetAll()">↺ Recommencer</button>
+      <button class="btn btn-outline" onclick="copyCode()">📋 Copier le HTML</button>
+      <button class="btn btn-primary" onclick="switchTab('code')">Voir le code →</button>
+    </div>
+  </div>
+
+</main>
+
+<div id="toast"></div>
+
+<script>
+  let selectedFormat = 'auto';
+  let generatedPrompt = '';
+  let generatedHTML = '';
+  let currentStep = 1;
+
+  const SYSTEM_INSTRUCTIONS = `Tu es « Nutripure - International UX Blocks (IT/ES) ». Tu génères des blocs UX HTML prêts Shopify pour l'équipe internationale (Italie/Espagne).
+
+RÈGLES DE LANGUE :
+- Tes explications sont TOUJOURS en français.
+- Dans le HTML livré : URL "/es-es/" → espagnol ; "/it-it/" → italien ; sinon détecte depuis le texte.
+
+RÈGLES DE SORTIE ABSOLUES :
+- Livre TOUJOURS en 2 sections séparées par la ligne "---RECO---" exactement :
+  Section A : bloc HTML complet et autonome avec son propre <style>. Commence directement par "<div" sans markdown ni backticks.
+  Section B : recommandations SEO/UX courtes en français (3-5 lignes max).
+- JAMAIS de balises \`\`\`html ou \`\`\` autour du code HTML.
+
+RÈGLES DESIGN (aligné nutripure.fr) :
+- Ne JAMAIS définir font-family (respect du thème Shopify).
+- Fond section : #e8f0fb · Cartes internes : #ffffff · Radius : 10-12px.
+- En-têtes tableau : fond #d6e7fb, font-weight 600.
+- Badges avantage : fond #d4edda, texte #1d5c38.
+- Alternance lignes tableau : lignes impaires #f8fafd.
+- Préfixe classes CSS : np-ux-int-
+- Titres : <h3>. Mobile-first. Tableau dans conteneur overflow-x:auto.
+- Liens externes : rel="nofollow".
+
+RÈGLES TYPOGRAPHIQUES — PRINCIPE FONDAMENTAL :
+Le bloc est intégré dans Shopify qui a déjà sa propre typographie de base (~16px).
+NE PAS définir font-size sur le conteneur principal ni sur les éléments courants : laisser l'héritage du thème Shopify faire le travail.
+Définir font-size UNIQUEMENT sur les exceptions listées ci-dessous.
+
+SEULS CES ÉLÉMENTS PEUVENT AVOIR UN font-size EXPLICITE :
+- h3 du bloc : font-size: 1.2rem; font-weight: 700; (jamais en dessous)
+- th tableau : font-size: .96rem; font-weight: 700;
+- résumé intro box strong : font-size: 1rem;
+- résumé intro box span : font-size: .96rem;
+- note bas de bloc : font-size: .96rem;
+- chips/badges uniquement : font-size: .84rem; (c'est le MINIMUM absolu autorisé)
+
+TOUS LES AUTRES ÉLÉMENTS (td, p, li, texte encart, FAQ...) : PAS de font-size → héritage naturel du thème.
+
+PADDING OBLIGATOIRE pour les cellules tableau :
+- th : padding: 13px 12px;
+- td : padding: 13px 12px; line-height: 1.45;
+
+Modèle de structure CSS à suivre pour les tableaux :
+  .np-ux-int-[bloc] th { background:#dbeaf9; font-weight:700; font-size:.96rem; padding:13px 12px; }
+  .np-ux-int-[bloc] td { padding:13px 12px; line-height:1.45; border-bottom:1px solid #e7f3ff; vertical-align:top; }
+  .np-ux-int-[bloc] td:first-child { width:28%; font-weight:700; background:#f9fcff; }
+  .np-ux-int-[bloc] tr:last-child td { border-bottom:none; }`;
+
+  // PILLS
+  document.querySelectorAll('.pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.pill').forEach(p => p.classList.remove('selected'));
+      pill.classList.add('selected');
+      selectedFormat = pill.dataset.val;
+    });
+  });
+
+  // STEPPER
+  function showCards(upTo) {
+    currentStep = upTo;
+    [1,2,3,4].forEach(i => {
+      document.getElementById('card' + i).style.display = i <= upTo ? '' : 'none';
+      const s = document.getElementById('s' + i);
+      s.classList.toggle('active', i === upTo);
+      s.classList.toggle('done', i < upTo);
+    });
+    setTimeout(() => {
+      const card = document.getElementById('card' + upTo);
+      if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
+  }
+
+  // ÉTAPE 1
+  function buildPrompt() {
+    const sourceText = document.getElementById('sourceText').value.trim();
+    const extraContext = document.getElementById('extraContext').value.trim();
+    const errorMsg = document.getElementById('errorMsg');
+    errorMsg.style.display = 'none';
+
+    if (!sourceText) {
+      errorMsg.textContent = '⚠ Le texte source est obligatoire. Collez le paragraphe de l\'article à transformer.';
+      errorMsg.style.display = 'block';
+      return;
+    }
+
+    const formatLabels = {
+      'auto': 'Auto – Smart Dataviz (choisis le format le plus lisible)',
+      'tableau': 'Tableau comparatif responsive',
+      'encart-definition': 'Encart définition',
+      'points-cles': 'Encart points clés',
+      'mini-faq': 'Mini FAQ (4 à 8 questions/réponses)',
+      'precautions': 'Encart précautions / limites',
+      'infographie': 'Infographie texte'
+    };
+
+    generatedPrompt = SYSTEM_INSTRUCTIONS + '\n\n---\n\n';
+    generatedPrompt += `Type de bloc demandé : ${formatLabels[selectedFormat] || selectedFormat}\n\n`;
+    generatedPrompt += `Texte source à transformer :\n${sourceText}`;
+    if (extraContext) generatedPrompt += `\n\nInstructions complémentaires : ${extraContext}`;
+
+    document.getElementById('promptDisplay').textContent = generatedPrompt;
+    showCards(2);
+  }
+
+  // COPIER PROMPT
+  function copyPrompt() {
+    navigator.clipboard.writeText(generatedPrompt).then(() => {
+      toast('Prompt copié ! Collez-le dans Claude.ai ✓', 'success');
+    }).catch(() => { fallbackCopy(generatedPrompt); toast('Prompt copié ✓', 'success'); });
+  }
+
+  // ÉTAPE 3 : PARSE
+  function parseResponse() {
+    const raw = document.getElementById('responseText').value.trim();
+    if (!raw) { toast('⚠ Collez d\'abord la réponse de Claude.ai.', 'error'); return; }
+
+    const parts = raw.split('---RECO---');
+    let html = parts[0].trim();
+    html = html.replace(/^```html\n?/i, '').replace(/\n?```$/i, '').trim();
+    generatedHTML = html;
+
+    document.getElementById('previewContent').innerHTML = html;
+    document.getElementById('codeContent').textContent = html;
+    detectAndShowLang();
+    showCards(4);
+    switchTab('preview');
+  }
+
+  // LANGUE
+  function detectAndShowLang() {
+    const text = document.getElementById('sourceText').value.toLowerCase();
+    const es = ['proteína','suero','leche','absorción','caseína','magnesio','vegetal','aislada','concentrada'].filter(w => text.includes(w)).length;
+    const it = ['proteina','latte','siero','assorbimento','caseina','magnesio','vegetal','isolata','concentrata'].filter(w => text.includes(w)).length;
+    const lang = es > it ? '🇪🇸 Espagnol' : it > es ? '🇮🇹 Italien' : '🌐 Langue auto';
+    const badge = document.getElementById('langBadge');
+    badge.textContent = lang;
+    badge.classList.add('visible');
+  }
+
+  // ONGLETS
+  function switchTab(tab) {
+    document.getElementById('tabPreview').classList.toggle('active', tab === 'preview');
+    document.getElementById('tabCode').classList.toggle('active', tab === 'code');
+    document.getElementById('previewPane').style.display = tab === 'preview' ? '' : 'none';
+    const cp = document.getElementById('codePane');
+    cp.classList.toggle('visible', tab === 'code');
+    cp.style.display = '';
+  }
+
+  // COPIER HTML
+  function copyCode() {
+    if (!generatedHTML) { toast('Rien à copier.', 'error'); return; }
+    navigator.clipboard.writeText(generatedHTML).then(() => toast('HTML copié ✓', 'success')).catch(() => { fallbackCopy(generatedHTML); toast('HTML copié ✓', 'success'); });
+  }
+
+  function fallbackCopy(text) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  }
+
+  // RESET
+  function resetAll() {
+    ['sourceText','extraContext','responseText'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('errorMsg').style.display = 'none';
+    document.getElementById('previewContent').innerHTML = '';
+    document.getElementById('codeContent').textContent = '';
+    document.getElementById('langBadge').classList.remove('visible');
+    generatedHTML = ''; generatedPrompt = '';
+    document.querySelectorAll('.pill').forEach(p => p.classList.remove('selected'));
+    document.querySelector('.pill[data-val="auto"]').classList.add('selected');
+    selectedFormat = 'auto';
+    showCards(1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // TOAST
+  function toast(msg, type = '') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = type ? `show ${type}` : 'show';
+    setTimeout(() => el.className = type, 2800);
+  }
+</script>
+</body>
+</html>
